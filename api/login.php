@@ -1,9 +1,14 @@
 <?php
+// A PRIMEIRA COISA TEM QUE SER ISSO:
+session_start(); 
+
+require_once '../config/database.php'; // Ou o caminho do seu banco
+header('Content-Type: application/json');
+
+// ... resto do seu código ...
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-session_start();
-require_once '../config/database.php';
 
 // Define que a resposta será em formato JSON
 header('Content-Type: application/json');
