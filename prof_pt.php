@@ -1,10 +1,45 @@
+<?php
+session_start();
+
+// Verifica se está logado e se é Professor
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+if ($_SESSION['user_perfil'] !== 'Professor') {
+    // Se um aluno tentar acessar essa página pela URL, é expulso para a tela de aluno
+    header("Location: aluno_pt.php"); 
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Português - Visão do Professor</title>
+    <title>Português - Área do Professor</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Efeito de zoom ao passar o mouse */
+        .card-clicavel {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .card-clicavel:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
+        
+        /* Limita o texto no card pequeno */
+        .texto-limitado {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
 </head>
 <body class="min-vh-100" style="background-color: #F4F6F8; color: #2D3748;">
 
@@ -17,14 +52,13 @@
                         <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
                     </svg>
                 </a>
-                <h4 class="mb-0 fw-bold" style="color: #3182CE;">Português <span class="badge rounded-pill align-middle ms-2 bg-warning text-dark" style="font-size: 0.75rem;">Modo Professor</span></h4>
+                <h4 class="mb-0 fw-bold" style="color: #3182CE;">Português </h4>
             </div>
             
-            <div class="d-flex gap-2">
-                <button class="btn fw-bold rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNovaTurma" style="background-color: #DD6B20; color: #FFFFFF;">
-                    <span class="d-none d-sm-inline">+ Nova Turma</span>
-                    <span class="d-inline d-sm-none">+</span>
-                </button>
+            <div class="d-flex gap-2 align-items-center">
+                <a href="gerenciar_turmas.php" class="btn btn-outline-secondary fw-bold rounded-pill px-3 shadow-sm d-none d-md-block">
+                    Gerenciar Turmas
+                </a>
 
                 <button class="btn fw-bold rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNovoTermo" style="background-color: #3182CE; color: #FFFFFF;">
                     <span class="d-none d-sm-inline">+ Novo Termo</span>
@@ -53,66 +87,53 @@
                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                         </svg>
                     </span>
-                    <input type="text" class="form-control border-0 shadow-none fs-6 py-3" placeholder="Pesquisar palavra..." style="color: #2D3748;">
+                    <input type="text" id="pesquisaTermo" class="form-control border-0 shadow-none fs-6 py-3" placeholder="Pesquisar palavra..." style="color: #2D3748;">
                 </div>
             </div>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-4" id="listaTermos">
             
             <div class="col-12 col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4 position-relative hover-shadow" style="background-color: #FFFFFF;">
-                    <div class="card-body p-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 position-relative card-clicavel" style="background-color: #FFFFFF; border-left: 5px solid #3182CE !important;" onclick="abrirTermo('Algoritmo', 'Sequência finita de regras, raciocínios ou operações que, aplicada a um número finito de dados, permite solucionar classes semelhantes de problemas.')">
+                    <div class="card-body p-4 d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <h5 class="card-title fw-bold mb-0" style="color: #3182CE; font-size: 1.25rem;">Algoritmo</h5>
-                            <button class="btn btn-sm btn-light text-danger border-0 rounded-circle p-2 shadow-none" title="Excluir termo" data-bs-toggle="modal" data-bs-target="#modalExcluirTermo">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                                </svg>
-                            </button>
                         </div>
-                        <p class="card-text text-muted" style="font-size: 0.95rem; line-height: 1.6;">
+                        <p class="card-text text-muted flex-grow-1 texto-limitado" style="font-size: 0.95rem; line-height: 1.6;">
                             Sequência finita de regras, raciocínios ou operações que, aplicada a um número finito de dados, permite solucionar classes semelhantes de problemas.
                         </p>
+                        
+                        <div class="d-flex justify-content-end gap-2 mt-3 pt-3 border-top">
+                            <button class="btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3" onclick="event.stopPropagation(); prepararEdicao(1, 'Algoritmo', 'Sequência finita de regras, raciocínios ou operações que, aplicada a um número finito de dados, permite solucionar classes semelhantes de problemas.')">
+                                Editar
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger rounded-pill fw-bold px-3" onclick="event.stopPropagation(); prepararExclusao(1)">
+                                Excluir
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="col-12 col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4 position-relative" style="background-color: #FFFFFF;">
-                    <div class="card-body p-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 position-relative card-clicavel" style="background-color: #FFFFFF; border-left: 5px solid #3182CE !important;" onclick="abrirTermo('Paradoxo', 'Declaração aparentemente verdadeira que leva a uma contradição lógica, ou a uma situação que desafia a intuição.')">
+                    <div class="card-body p-4 d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <h5 class="card-title fw-bold mb-0" style="color: #3182CE; font-size: 1.25rem;">Paradoxo</h5>
-                            <button class="btn btn-sm btn-light text-danger border-0 rounded-circle p-2 shadow-none" title="Excluir termo" data-bs-toggle="modal" data-bs-target="#modalExcluirTermo">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                                </svg>
-                            </button>
                         </div>
-                        <p class="card-text text-muted" style="font-size: 0.95rem; line-height: 1.6;">
+                        <p class="card-text text-muted flex-grow-1 texto-limitado" style="font-size: 0.95rem; line-height: 1.6;">
                             Declaração aparentemente verdadeira que leva a uma contradição lógica, ou a uma situação que desafia a intuição.
                         </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4 position-relative" style="background-color: #FFFFFF;">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h5 class="card-title fw-bold mb-0" style="color: #3182CE; font-size: 1.25rem;">Sintaxe</h5>
-                            <button class="btn btn-sm btn-light text-danger border-0 rounded-circle p-2 shadow-none" title="Excluir termo" data-bs-toggle="modal" data-bs-target="#modalExcluirTermo">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                                </svg>
+                        
+                        <div class="d-flex justify-content-end gap-2 mt-3 pt-3 border-top">
+                            <button class="btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3" onclick="event.stopPropagation(); prepararEdicao(2, 'Paradoxo', 'Declaração aparentemente verdadeira que leva a uma contradição lógica, ou a uma situação que desafia a intuição.')">
+                                Editar
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger rounded-pill fw-bold px-3" onclick="event.stopPropagation(); prepararExclusao(2)">
+                                Excluir
                             </button>
                         </div>
-                        <p class="card-text text-muted" style="font-size: 0.95rem; line-height: 1.6;">
-                            Parte da gramática que estuda a disposição das palavras na frase e das frases no discurso, bem como a relação lógica das frases entre si.
-                        </p>
                     </div>
                 </div>
             </div>
@@ -120,52 +141,47 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalNovaTurma" tabindex="-1" aria-labelledby="modalNovaTurmaLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg rounded-4">
-            <div class="modal-header border-0 pb-0 pt-4 px-4">
-                <h5 class="modal-title fw-bold" id="modalNovaTurmaLabel" style="color: #2D3748;">Adicionar Turma</h5>
-                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="formNovaTurma">
+    <div class="modal fade" id="modalLeituraTermo" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="p-2 rounded-circle" style="background-color: rgba(49, 130, 206, 0.1); color: #3182CE;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v10.137a.5.5 0 0 0 .77.419C1.76 12.56 3.99 11.732 7.5 11.732c1.38 0 2.583.523 3.217 1.036a.5.5 0 0 0 .786-.441V2.5a.5.5 0 0 0-.11-.312C10.48 1.572 8.913 1.14 8 1.783z"/>
+                            </svg>
+                        </div>
+                        <h4 class="modal-title fw-bold mb-0" id="modalTituloLeitura" style="color: #3182CE;">Título</h4>
+                    </div>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
                 <div class="modal-body px-4 py-4">
-                    <div class="mb-3">
-                        <label for="nomeTurma" class="form-label fw-bold small text-uppercase text-muted">Nome da Turma</label>
-                        <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light" id="nomeTurma" name="nome_turma" placeholder="Ex: 3º Ano A" required>
-                    </div>
-                    <div class="mb-2">
-                        <label for="codigoLogin" class="form-label fw-bold small text-uppercase text-muted">Código de Login</label>
-                        <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light" id="codigoLogin" name="codigo_login" placeholder="Ex: SENHA123" required>
-                    </div>
+                    <p id="modalSignificadoLeitura" class="text-secondary mb-0 fs-5" style="white-space: pre-wrap; line-height: 1.8;"></p>
                 </div>
-                <div class="modal-footer border-0 pt-0 pb-4 px-4 d-flex gap-2">
-                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold flex-grow-1" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn rounded-pill px-4 fw-bold flex-grow-1" style="background-color: #DD6B20; color: #FFFFFF;">Salvar Turma</button>
+                <div class="modal-footer border-0 pt-0 pb-4 px-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold w-100" data-bs-dismiss="modal" style="color: #2D3748;">Fechar</button>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
-</div>
-    <div class="modal fade" id="modalNovoTermo" tabindex="-1" aria-labelledby="modalNovoTermoLabel" aria-hidden="true">
+
+    <div class="modal fade" id="modalNovoTermo" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
                 <div class="modal-header border-0 pb-0 pt-4 px-4">
-                    <h5 class="modal-title fw-bold" id="modalNovoTermoLabel" style="color: #2D3748;">Adicionar Palavra</h5>
+                    <h5 class="modal-title fw-bold" style="color: #2D3748;">Adicionar Termo</h5>
                     <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="#" method="POST">
+                <form id="formNovoTermo">
                     <div class="modal-body px-4 py-4">
-                        
                         <div class="mb-4">
-                            <label for="palavra" class="form-label fw-bold small text-uppercase text-muted">Termo / Palavra</label>
-                            <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light" id="palavra" placeholder="Ex: Metáfora" required>
+                            <label class="form-label fw-bold small text-uppercase text-muted">Termo / Palavra</label>
+                            <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light" name="nome_termo" placeholder="Ex: Metáfora" required>
                         </div>
-
                         <div class="mb-2">
-                            <label for="significado" class="form-label fw-bold small text-uppercase text-muted">Significado</label>
-                            <textarea class="form-control rounded-3 border-0 bg-light" id="significado" rows="4" placeholder="Digite a definição da palavra..." required></textarea>
+                            <label class="form-label fw-bold small text-uppercase text-muted">Significado</label>
+                            <textarea class="form-control rounded-3 border-0 bg-light" name="significado_termo" rows="4" placeholder="Digite a definição da palavra..." required></textarea>
                         </div>
-
                     </div>
                     <div class="modal-footer border-0 pt-0 pb-4 px-4 d-flex gap-2">
                         <button type="button" class="btn btn-light rounded-pill px-4 fw-bold flex-grow-1" data-bs-dismiss="modal">Cancelar</button>
@@ -176,24 +192,84 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalExcluirTermo" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content border-0 shadow-lg rounded-4 text-center p-4">
-                <div class="mb-3" style="color: #E53E3E;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-                    </svg>
+    <div class="modal fade" id="modalEditarTermo" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0 pt-4 px-4">
+                    <h5 class="modal-title fw-bold" style="color: #2D3748;">Editar Termo</h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <h5 class="fw-bold mb-2" style="color: #2D3748;">Tem certeza?</h5>
-                <p class="text-muted mb-4 small">Você realmente deseja excluir esse termo? Essa ação não pode ser desfeita.</p>
-                <div class="d-flex gap-2 justify-content-center">
-                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold flex-grow-1" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold flex-grow-1">Excluir</button>
+                <form id="formEditarTermo">
+                    <div class="modal-body px-4 py-4">
+                        <input type="hidden" id="edit_id" name="id">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-uppercase text-muted">Termo / Palavra</label>
+                            <input type="text" id="edit_nome" class="form-control form-control-lg rounded-3 border-0 bg-light" name="nome_termo" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold small text-uppercase text-muted">Significado</label>
+                            <textarea id="edit_significado" class="form-control rounded-3 border-0 bg-light" name="significado_termo" rows="4" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0 pb-4 px-4 d-flex gap-2">
+                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold flex-grow-1" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn rounded-pill px-4 fw-bold flex-grow-1" style="background-color: #3182CE; color: #FFFFFF;">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalExcluirTermo" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-body p-5 text-center">
+                    <div class="text-danger mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                            <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+                        </svg>
+                    </div>
+                    <h4 class="fw-bold mb-3" style="color: #2D3748;">Excluir Termo?</h4>
+                    <p class="text-muted mb-4">Tem certeza que deseja apagar esta palavra? Esta ação não poderá ser desfeita.</p>
+                    <form id="formExcluirTermo">
+                        <input type="hidden" id="delete_id" name="id">
+                        <div class="d-flex gap-3 justify-content-center">
+                            <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold">Sim, Excluir</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Função para ABRIR LEITURA (Ampliar)
+        function abrirTermo(titulo, significado) {
+            document.getElementById('modalTituloLeitura').innerText = titulo;
+            document.getElementById('modalSignificadoLeitura').innerText = significado;
+            var modal = new bootstrap.Modal(document.getElementById('modalLeituraTermo'));
+            modal.show();
+        }
+
+        // Função para PREPARAR EDIÇÃO
+        function prepararEdicao(id, nome, significado) {
+            document.getElementById('edit_id').value = id;
+            document.getElementById('edit_nome').value = nome;
+            document.getElementById('edit_significado').value = significado;
+            var modal = new bootstrap.Modal(document.getElementById('modalEditarTermo'));
+            modal.show();
+        }
+
+        // Função para PREPARAR EXCLUSÃO
+        function prepararExclusao(id) {
+            document.getElementById('delete_id').value = id;
+            var modal = new bootstrap.Modal(document.getElementById('modalExcluirTermo'));
+            modal.show();
+        }
+    </script>
 </body>
 </html>
