@@ -1,13 +1,21 @@
 <?php
 session_start();
 require_once '../config/database.php';
+
+// Define que a resposta será em formato JSON
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['user_id']) || $_SESSION['user_perfil'] !== 'gestor') {
-    echo json_encode(["success" => false, "message" => "Acesso negado."]);
+// Captura o JSON enviado pelo Fetch/JS
+$dadosBrutos = file_get_contents("php://input");
+$data = json_decode($dadosBrutos);
+
+// Verifica se o código de login foi enviado
+if (!$data || empty($data->codigoAcesso)) {
+    echo json_encode(["success" => false, "message" => "Informe o código de acesso.". $data->codigoAcesso]);
+
+
     exit;
 }
-$method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method){
     case 'GET':
@@ -32,15 +40,15 @@ switch ($method){
             exit;
             }
 
-            $nome = $conn->real_escape_string(trim($data->nome));
-            $id_bloco = (int)$data->id_bloco;
+            $nome_termo = $conn->real_escape_string(trim($data->nome_termo));
+            $significado_termo = $conn->real_escape_string(trim($data->significado_termo));
 
             $sql = "INSERT INTO termos (nome_termo, significado_termo) VALUES ('$nome_termo', '$significado_termo')";
 
             if($conn->query($sql) === TRUE){
-                echo json_encode(["success" => true, "message" => "Ambiente criado com sucesso!", "id_ambiente" => $conn->insert_id]);
+                echo json_encode(["success" => true, "message" => "Termo criado com sucesso!", "id_termo" => $conn->insert_id]);
             } else {
-                echo json_encode(["success" => false, "message" => "Erro ao criar ambiente: " . $conn->error]);
+                echo json_encode(["success" => false, "message" => "Erro ao criar termo: " . $conn->error]);
             }
             break;
 }
