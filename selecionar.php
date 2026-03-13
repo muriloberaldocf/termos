@@ -10,12 +10,12 @@ if (!isset($_SESSION['perfil'])) {
 
 // Verifica o perfil e define para onde os botões vão apontar
 if ($_SESSION['perfil'] == 'professor') {
-    $linkPortugues = 'dicionario_pt_prof.php';
-    $linkMatematica = 'dicionario_mt_prof.php';
+    $linkPortugues = 'prof_pt.php';
+    $linkMatematica = 'prof_mat.php';
 } else {
     // Se não for professor, assumimos que é a sala (aluno)
-    $linkPortugues = 'dicionario_pt_al.php';
-    $linkMatematica = 'dicionario_mt_al.php';
+    $linkPortugues = 'aluno_pt.php';
+    $linkMatematica = 'aluno_mat.php';
 }
 ?>
 
