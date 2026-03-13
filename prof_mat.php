@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matemática - Visão da Sala</title>
+    <title>Matemática - Visão do Professor</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="min-vh-100" style="background-color: #F4F6F8; color: #2D3748;">
@@ -17,16 +17,21 @@
                         <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
                     </svg>
                 </a>
-                <h4 class="mb-0 fw-bold" style="color: #3182CE;">Matemática <span class="badge rounded-pill align-middle ms-2" style="background-color: #E2E8F0; color: #4A5568; font-size: 0.75rem;">Modo Sala</span></h4>
+                <h4 class="mb-0 fw-bold" style="color: #3182CE;">Matemática <span class="badge rounded-pill align-middle ms-2 bg-warning text-dark" style="font-size: 0.75rem;">Modo Professor</span></h4>
             </div>
             
             <div class="d-flex gap-2">
-                <button class="btn fw-bold rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNovaFormula" style="background-color: #3182CE; color: #FFFFFF;">
-                    <span class="d-none d-sm-inline">+ Nova Fórmula</span>
+                <button class="btn fw-bold rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNovaTurma" style="background-color: #DD6B20; color: #FFFFFF;">
+                    <span class="d-none d-sm-inline">+ Nova Turma</span>
                     <span class="d-inline d-sm-none">+</span>
                 </button>
 
-                <a href="login.php" class="btn btn-light text-danger fw-bold rounded-pill px-3 shadow-sm border-0 d-flex align-items-center gap-2" title="Sair da conta">
+                <button class="btn fw-bold rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNovoTermo" style="background-color: #3182CE; color: #FFFFFF;">
+                    <span class="d-none d-sm-inline">+ Novo Assunto</span>
+                    <span class="d-inline d-sm-none">+</span>
+                </button>
+
+                <a href="api/logout.php" class="btn btn-light text-danger fw-bold rounded-pill px-3 shadow-sm border-0 d-flex align-items-center gap-2" title="Sair da conta">
                     <span class="d-none d-sm-inline">Sair</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
@@ -48,7 +53,7 @@
                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                         </svg>
                     </span>
-                    <input type="text" class="form-control border-0 shadow-none fs-6 py-3" placeholder="Pesquisar fórmula ou assunto..." style="color: #2D3748;">
+                    <input type="text" class="form-control border-0 shadow-none fs-6 py-3" placeholder="Pesquisar assunto..." style="color: #2D3748;">
                 </div>
             </div>
         </div>
@@ -68,60 +73,8 @@
                             </button>
                         </div>
                         
-                        <div class="p-3 mb-3 rounded-3 text-center text-dark font-monospace fs-4 shadow-sm" style="background-color: #F4F6F8;">
-                            a&sup2; = b&sup2; + c&sup2;
-                        </div>
-
                         <p class="card-text text-muted flex-grow-1" style="font-size: 0.95rem; line-height: 1.6;">
-                            Usado para encontrar o comprimento de um dos lados de um triângulo retângulo, conhecendo os outros dois.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4 position-relative" style="background-color: #FFFFFF;">
-                    <div class="card-body p-4 d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h5 class="card-title fw-bold mb-0" style="color: #3182CE; font-size: 1.25rem;">Fórmula de Bhaskara</h5>
-                            <button class="btn btn-sm btn-light text-danger border-0 rounded-circle p-2 shadow-none" title="Excluir" data-bs-toggle="modal" data-bs-target="#modalExcluirTermo">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                                </svg>
-                            </button>
-                        </div>
-                        
-                        <div class="p-3 mb-3 rounded-3 text-center text-dark font-monospace fs-6 shadow-sm d-flex align-items-center justify-content-center" style="background-color: #F4F6F8; min-height: 70px;">
-                            x = (-b &plusmn; &radic;(b&sup2; - 4ac)) / 2a
-                        </div>
-
-                        <p class="card-text text-muted flex-grow-1" style="font-size: 0.95rem; line-height: 1.6;">
-                            Método para encontrar as raízes reais de uma equação do segundo grau.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4 position-relative" style="background-color: #FFFFFF;">
-                    <div class="card-body p-4 d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h5 class="card-title fw-bold mb-0" style="color: #3182CE; font-size: 1.25rem;">Área do Círculo</h5>
-                            <button class="btn btn-sm btn-light text-danger border-0 rounded-circle p-2 shadow-none" title="Excluir" data-bs-toggle="modal" data-bs-target="#modalExcluirTermo">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                                </svg>
-                            </button>
-                        </div>
-                        
-                        <div class="p-3 mb-3 rounded-3 text-center text-dark font-monospace fs-4 shadow-sm" style="background-color: #F4F6F8; min-height: 70px; display: flex; align-items: center; justify-content: center;">
-                            A = &pi; &middot; r&sup2;
-                        </div>
-
-                        <p class="card-text text-muted flex-grow-1" style="font-size: 0.95rem; line-height: 1.6;">
-                            Calcula a área da superfície interna de uma circunferência com base no seu raio (r).
+                            Usado para encontrar o comprimento de um dos lados de um triângulo retângulo (a² = b² + c²), conhecendo os outros dois.
                         </p>
                     </div>
                 </div>
@@ -130,11 +83,38 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalNovaFormula" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="modalNovaTurma" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
                 <div class="modal-header border-0 pb-0 pt-4 px-4">
-                    <h5 class="modal-title fw-bold" style="color: #2D3748;">Adicionar Fórmula</h5>
+                    <h5 class="modal-title fw-bold" style="color: #2D3748;">Adicionar Turma</h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formNovaTurma">
+                    <div class="modal-body px-4 py-4">
+                        <div class="mb-3">
+                            <label for="nomeTurma" class="form-label fw-bold small text-uppercase text-muted">Nome da Turma</label>
+                            <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light" id="nomeTurma" name="nome_turma" placeholder="Ex: 3º Ano A" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="codigoLogin" class="form-label fw-bold small text-uppercase text-muted">Código de Login</label>
+                            <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light" id="codigoLogin" name="codigo_login" placeholder="Ex: SENHA123" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0 pb-4 px-4 d-flex gap-2">
+                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold flex-grow-1" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn rounded-pill px-4 fw-bold flex-grow-1" style="background-color: #DD6B20; color: #FFFFFF;">Salvar Turma</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalNovoTermo" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0 pt-4 px-4">
+                    <h5 class="modal-title fw-bold" style="color: #2D3748;">Adicionar Assunto</h5>
                     <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="#" method="POST">
@@ -142,23 +122,18 @@
                         
                         <div class="mb-3">
                             <label class="form-label fw-bold small text-uppercase text-muted">Assunto / Nome</label>
-                            <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light" placeholder="Ex: Velocidade Média" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold small text-uppercase text-muted">Fórmula</label>
-                            <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light font-monospace" placeholder="Ex: Vm = ΔS / Δt" required>
+                            <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light" name="nome_termo" placeholder="Ex: Teorema de Pitágoras" required>
                         </div>
 
                         <div class="mb-2">
-                            <label class="form-label fw-bold small text-uppercase text-muted">Para que serve?</label>
-                            <textarea class="form-control rounded-3 border-0 bg-light" rows="3" placeholder="Explique brevemente quando usar essa fórmula..." required></textarea>
+                            <label class="form-label fw-bold small text-uppercase text-muted">Explicação / Fórmula</label>
+                            <textarea class="form-control rounded-3 border-0 bg-light" name="significado_termo" rows="4" placeholder="Escreva a fórmula e para que serve..." required></textarea>
                         </div>
 
                     </div>
                     <div class="modal-footer border-0 pt-0 pb-4 px-4 d-flex gap-2">
                         <button type="button" class="btn btn-light rounded-pill px-4 fw-bold flex-grow-1" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn rounded-pill px-4 fw-bold flex-grow-1" style="background-color: #3182CE; color: #FFFFFF;">Salvar Fórmula</button>
+                        <button type="submit" class="btn rounded-pill px-4 fw-bold flex-grow-1" style="background-color: #3182CE; color: #FFFFFF;">Salvar</button>
                     </div>
                 </form>
             </div>
@@ -174,7 +149,7 @@
                     </svg>
                 </div>
                 <h5 class="fw-bold mb-2" style="color: #2D3748;">Tem certeza?</h5>
-                <p class="text-muted mb-4 small">Você realmente deseja excluir essa fórmula? Essa ação não pode ser desfeita.</p>
+                <p class="text-muted mb-4 small">Você realmente deseja excluir este registro? Essa ação não pode ser desfeita.</p>
                 <div class="d-flex gap-2 justify-content-center">
                     <button type="button" class="btn btn-light rounded-pill px-4 fw-bold flex-grow-1" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold flex-grow-1">Excluir</button>

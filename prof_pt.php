@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dicionário - Visão da Sala</title>
+    <title>Português - Visão do Professor</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="min-vh-100" style="background-color: #F4F6F8; color: #2D3748;">
@@ -17,15 +17,21 @@
                         <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
                     </svg>
                 </a>
-                <h4 class="mb-0 fw-bold" style="color: #3182CE;">Dicionário <span class="badge rounded-pill align-middle ms-2" style="background-color: #E2E8F0; color: #4A5568; font-size: 0.75rem;">Modo Sala</span></h4>
+                <h4 class="mb-0 fw-bold" style="color: #3182CE;">Português <span class="badge rounded-pill align-middle ms-2 bg-warning text-dark" style="font-size: 0.75rem;">Modo Professor</span></h4>
             </div>
             
             <div class="d-flex gap-2">
+                <button class="btn fw-bold rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNovaTurma" style="background-color: #DD6B20; color: #FFFFFF;">
+                    <span class="d-none d-sm-inline">+ Nova Turma</span>
+                    <span class="d-inline d-sm-none">+</span>
+                </button>
+
                 <button class="btn fw-bold rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNovoTermo" style="background-color: #3182CE; color: #FFFFFF;">
                     <span class="d-none d-sm-inline">+ Novo Termo</span>
-                    <span class="d-inline d-sm-none">+</span> </button>
+                    <span class="d-inline d-sm-none">+</span> 
+                </button>
 
-                <a href="login.php" class="btn btn-light text-danger fw-bold rounded-pill px-3 shadow-sm border-0 d-flex align-items-center gap-2" title="Sair da conta">
+                <a href="api/logout.php" class="btn btn-light text-danger fw-bold rounded-pill px-3 shadow-sm border-0 d-flex align-items-center gap-2" title="Sair da conta">
                     <span class="d-none d-sm-inline">Sair</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
@@ -114,6 +120,32 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modalNovaTurma" tabindex="-1" aria-labelledby="modalNovaTurmaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0 pt-4 px-4">
+                <h5 class="modal-title fw-bold" id="modalNovaTurmaLabel" style="color: #2D3748;">Adicionar Turma</h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formNovaTurma">
+                <div class="modal-body px-4 py-4">
+                    <div class="mb-3">
+                        <label for="nomeTurma" class="form-label fw-bold small text-uppercase text-muted">Nome da Turma</label>
+                        <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light" id="nomeTurma" name="nome_turma" placeholder="Ex: 3º Ano A" required>
+                    </div>
+                    <div class="mb-2">
+                        <label for="codigoLogin" class="form-label fw-bold small text-uppercase text-muted">Código de Login</label>
+                        <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light" id="codigoLogin" name="codigo_login" placeholder="Ex: SENHA123" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 pb-4 px-4 d-flex gap-2">
+                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold flex-grow-1" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn rounded-pill px-4 fw-bold flex-grow-1" style="background-color: #DD6B20; color: #FFFFFF;">Salvar Turma</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
     <div class="modal fade" id="modalNovoTermo" tabindex="-1" aria-labelledby="modalNovoTermoLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">

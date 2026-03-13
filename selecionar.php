@@ -8,9 +8,6 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// echo $_SESSION['user_perfil'];
-// echo $_SESSION['user_id'];
-
 // Verifica o perfil e define para onde os botões vão apontar
 if ($_SESSION['user_perfil'] == 'Professor') {
     $linkPortugues = 'prof_pt.php';
@@ -29,18 +26,26 @@ if ($_SESSION['user_perfil'] == 'Professor') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cards Dicionário - Espaçados</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .hover-scale {
+            transition: transform 0.2s ease-in-out;
+        }
+        .hover-scale:hover {
+            transform: scale(1.02);
+        }
+    </style>
 </head>
-<body class="min-vh-100 d-flex align-items-center justify-content-center py-5" style="background-color: #F4F6F8;">
+<body class="min-vh-100 d-flex flex-column align-items-center justify-content-center py-5" style="background-color: #F4F6F8;">
 
     <div class="position-absolute top-0 end-0 p-4">
-        <a href="index.php" class="btn btn-outline-danger rounded-pill px-4 fw-bold">Sair</a>
+        <a href="api/logout.php" class="btn btn-outline-danger rounded-pill px-4 fw-bold">Sair</a>
     </div>
 
     <div class="container">
         <div class="row justify-content-center g-4">
             
             <div class="col-12 col-md-8 col-lg-5">
-                <div class="card shadow border-0 p-5 text-center rounded-4 overflow-hidden position-relative" 
+                <div class="card shadow border-0 p-5 text-center rounded-4 overflow-hidden position-relative hover-scale" 
                      style="background-color: #3182CE; color: #FFFFFF; min-height: 400px;">
                     
                     <div class="position-absolute opacity-25" style="top: 30px; left: 30px; transform: rotate(-15deg);">
@@ -72,7 +77,7 @@ if ($_SESSION['user_perfil'] == 'Professor') {
             </div>
 
             <div class="col-12 col-md-8 col-lg-5">
-                <div class="card shadow border-0 p-5 text-center rounded-4 overflow-hidden position-relative" 
+                <div class="card shadow border-0 p-5 text-center rounded-4 overflow-hidden position-relative hover-scale" 
                      style="background-color: #DD6B20; color: #FFFFFF; min-height: 400px;">
                     
                     <div class="position-absolute opacity-25" style="top: 30px; left: 30px; transform: rotate(-15deg);">
@@ -105,6 +110,20 @@ if ($_SESSION['user_perfil'] == 'Professor') {
             </div>
 
         </div>
+
+        <?php if ($_SESSION['user_perfil'] == 'Professor'): ?>
+        <div class="row justify-content-center mt-4">
+            <div class="col-12 col-md-8 col-lg-10 text-center">
+                <a href="gerenciar_turmas.php" class="btn bg-white border-0 shadow-sm rounded-pill py-3 px-5 d-inline-flex align-items-center justify-content-center gap-3 hover-scale text-decoration-none" style="color: #2D3748; min-width: 250px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16" style="color: #4A5568;">
+                        <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
+                    </svg>
+                    <span class="fw-bold fs-5">Gerenciar Turmas</span>
+                </a>
+            </div>
+        </div>
+        <?php endif; ?>
+
     </div>
 
 </body>
