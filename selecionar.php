@@ -1,3 +1,24 @@
+<?php
+// Inicia a sessão para podermos ler quem está logado
+session_start();
+
+// Segurança: Se não existir ninguém logado, manda de volta pro login
+if (!isset($_SESSION['perfil'])) {
+    header("Location: selecionar.php");
+    exit;
+}
+
+// Verifica o perfil e define para onde os botões vão apontar
+if ($_SESSION['perfil'] == 'professor') {
+    $linkPortugues = 'dicionario_pt_prof.php';
+    $linkMatematica = 'dicionario_mt_prof.php';
+} else {
+    // Se não for professor, assumimos que é a sala (aluno)
+    $linkPortugues = 'dicionario_pt_al.php';
+    $linkMatematica = 'dicionario_mt_al.php';
+}
+?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -7,6 +28,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="min-vh-100 d-flex align-items-center justify-content-center py-5" style="background-color: #F4F6F8;">
+
+    <div class="position-absolute top-0 end-0 p-4">
+        <a href="index.php" class="btn btn-outline-danger rounded-pill px-4 fw-bold">Sair</a>
+    </div>
 
     <div class="container">
         <div class="row justify-content-center g-4">
@@ -35,7 +60,7 @@
                         </p>
                         
                         <div class="mt-auto mb-2">
-                            <a href="#" class="btn btn-light rounded-pill shadow-sm fw-bold px-5 py-3 w-100" style="color: #3182CE; font-size: 1.1rem;">
+                            <a href="<?php echo $linkPortugues; ?>" class="btn btn-light rounded-pill shadow-sm fw-bold px-5 py-3 w-100" style="color: #3182CE; font-size: 1.1rem;">
                                 Acessar Dicionário
                             </a>
                         </div>
@@ -68,7 +93,7 @@
                         </p>
                         
                         <div class="mt-auto mb-2">
-                            <a href="#" class="btn btn-light rounded-pill shadow-sm fw-bold px-5 py-3 w-100" style="color: #DD6B20; font-size: 1.1rem;">
+                            <a href="<?php echo $linkMatematica; ?>" class="btn btn-light rounded-pill shadow-sm fw-bold px-5 py-3 w-100" style="color: #DD6B20; font-size: 1.1rem;">
                                 Acessar Dicionário
                             </a>
                         </div>

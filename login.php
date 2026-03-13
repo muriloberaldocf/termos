@@ -22,29 +22,28 @@
 
     <div class="container position-relative z-1">
         <div class="row justify-content-center">
-            
             <div class="col-12 col-sm-10 col-md-8 col-lg-5">
                 <div class="card shadow-lg border-0 rounded-4 overflow-hidden" style="background-color: #FFFFFF;">
                     
                     <div class="p-5 text-center position-relative" style="background-color: #3182CE; color: #FFFFFF;">
-                        <div class="position-absolute opacity-25" style="top: -10px; right: -10px; transform: rotate(15deg);">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-                                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
-                            </svg>
-                        </div>
-                        
                         <h2 class="fw-bold mb-2 position-relative z-1">Bem-vindo(a)</h2>
                         <p class="mb-0 fs-5 position-relative z-1 opacity-75">Acesse sua plataforma</p>
                     </div>
 
                     <div class="p-4 p-md-5">
-                        <form>
+                        
+                        <?php if (isset($_GET['erro'])): ?>
+                            <div class="alert alert-danger" role="alert">
+                                <?php echo htmlspecialchars($_GET['erro']); ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <form action="api/login.php" method="POST">
                             
                             <div class="mb-4">
                                 <label for="codigoAcesso" class="form-label fw-bold small text-uppercase text-muted px-2">Código de Acesso</label>
                                 <div class="input-group input-group-lg rounded-pill px-2 py-1" style="background-color: #F4F6F8;">
-                                    <input type="password" class="form-control bg-transparent border-0 shadow-none fs-6" id="codigoAcesso" placeholder="Digite seu código" style="color: #2D3748;">
+                                    <input type="password" name="codigo_login" class="form-control bg-transparent border-0 shadow-none fs-6" id="codigoAcesso" placeholder="Digite seu código" style="color: #2D3748;" required>
                                     <button class="btn bg-transparent border-0 text-muted shadow-none rounded-circle me-1" type="button" id="btnOlho">
                                         <svg id="iconeOlho" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                                             <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
@@ -57,11 +56,10 @@
                             <div class="mb-5">
                                 <label class="form-label fw-bold small text-uppercase text-muted px-2">Entrar como</label>
                                 <div class="d-flex rounded-pill p-1" style="background-color: #F4F6F8;">
-                                    
-                                    <input type="radio" class="btn-check" name="tipoAcesso" id="acessoSala" autocomplete="off" checked>
+                                    <input type="radio" class="btn-check" name="tipoAcesso" value="sala" id="acessoSala" autocomplete="off" checked>
                                     <label class="btn btn-outline-secondary border-0 w-100 rounded-pill py-2 fw-semibold text-dark shadow-none" for="acessoSala">Sala</label>
 
-                                    <input type="radio" class="btn-check" name="tipoAcesso" id="acessoProfessor" autocomplete="off">
+                                    <input type="radio" class="btn-check" name="tipoAcesso" value="professor" id="acessoProfessor" autocomplete="off">
                                     <label class="btn btn-outline-secondary border-0 w-100 rounded-pill py-2 fw-semibold text-dark shadow-none" for="acessoProfessor">Professor</label>
                                 </div>
                             </div>
@@ -75,11 +73,11 @@
 
                 </div>
             </div>
-
         </div>
     </div>
 
     <script>
+        // SCRIPT ORIGINAL DO OLHINHO (MANTIDO, POIS APENAS MUDA A VISÃO DA SENHA)
         document.getElementById('btnOlho').addEventListener('click', function() {
             var inputCodigo = document.getElementById('codigoAcesso');
             var icone = document.getElementById('iconeOlho');

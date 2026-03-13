@@ -2,8 +2,8 @@
 
 $host = "localhost";
 $user = "root";
-$pass = "termos_tecnicos";
-$db   = "sgm_db";
+$pass = "";
+$db   = "termos_tecnicos";
 
 $conn = new mysqli($host, $user, $pass, $db);
 
