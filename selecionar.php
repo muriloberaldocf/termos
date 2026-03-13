@@ -3,13 +3,16 @@
 session_start();
 
 // Segurança: Se não existir ninguém logado, manda de volta pro login
-if (!isset($_SESSION['perfil'])) {
-    header("Location: selecionar.php");
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
     exit;
 }
 
+// echo $_SESSION['user_perfil'];
+// echo $_SESSION['user_id'];
+
 // Verifica o perfil e define para onde os botões vão apontar
-if ($_SESSION['perfil'] == 'professor') {
+if ($_SESSION['user_perfil'] == 'Professor') {
     $linkPortugues = 'prof_pt.php';
     $linkMatematica = 'prof_mat.php';
 } else {
