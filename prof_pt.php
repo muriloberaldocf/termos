@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 if ($_SESSION['user_perfil'] !== 'Professor') {
-    // Se um aluno tentar acessar essa página pela URL, é expulso para a tela de aluno
+    // Se um aluno tentar acessar essa página pela URL, é expulso para a página de aluno correspondente
     header("Location: aluno_pt.php"); 
     exit;
 }
@@ -39,6 +39,48 @@ if ($_SESSION['user_perfil'] !== 'Professor') {
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
+        /* --- NOVO ESTILO DO FILTRO ALFABÉTICO --- */
+        .scroll-alfabeto {
+            display: flex;
+            overflow-x: auto;
+            gap: 0.8rem;
+            padding: 10px 5px 20px 5px;
+            scrollbar-width: none; /* Esconde no Firefox */
+            -ms-overflow-style: none;  /* Esconde no IE/Edge */
+        }
+        .scroll-alfabeto::-webkit-scrollbar {
+            display: none; /* Esconde no Chrome/Safari */
+        }
+        .letra-item {
+            flex: 0 0 auto;
+            width: 48px;
+            height: 48px;
+            border: none;
+            background: #FFFFFF;
+            color: #A0AEC0; /* Cinza suave */
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 14px; /* Quadrado com borda arredondada estilo Apple */
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .letra-item:hover {
+            background: #F7FAFC;
+            color: #2D3748;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+        }
+        .letra-item.ativo {
+            background: #3182CE; /* Azul do Português */
+            color: #FFFFFF;
+            box-shadow: 0 8px 16px rgba(49, 130, 206, 0.3);
+            transform: translateY(-3px);
+        }
     </style>
 </head>
 <body class="min-vh-100" style="background-color: #F4F6F8; color: #2D3748;">
@@ -52,7 +94,7 @@ if ($_SESSION['user_perfil'] !== 'Professor') {
                         <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
                     </svg>
                 </a>
-                <h4 class="mb-0 fw-bold" style="color: #3182CE;">Português </h4>
+                <h4 class="mb-0 fw-bold" style="color: #3182CE;">Português</h4>
             </div>
             
             <div class="d-flex gap-2 align-items-center">
@@ -79,6 +121,14 @@ if ($_SESSION['user_perfil'] !== 'Professor') {
 
     <div class="container py-5">
         
+        <div class="row mb-4 justify-content-center">
+            <div class="col-12 col-xl-10">
+                <div class="scroll-alfabeto" id="filtroAlfabetico">
+                    <button class="letra-item ativo" onclick="filtrarPorLetra('Todos', this)">#</button>
+                    </div>
+            </div>
+        </div>
+
         <div class="row mb-5 justify-content-center">
             <div class="col-12 col-md-8 col-lg-6">
                 <div class="input-group input-group-lg rounded-pill shadow-sm overflow-hidden" style="background-color: #FFFFFF;">
@@ -87,58 +137,13 @@ if ($_SESSION['user_perfil'] !== 'Professor') {
                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                         </svg>
                     </span>
-                    <input type="text" id="pesquisaTermo" class="form-control border-0 shadow-none fs-6 py-3" placeholder="Pesquisar palavra..." style="color: #2D3748;">
+                    <input type="text" id="pesquisaTermo" class="form-control border-0 shadow-none fs-6 py-3" placeholder="Pesquisar verbo, conceito..." style="color: #2D3748;">
                 </div>
             </div>
         </div>
 
         <div class="row g-4" id="listaTermos">
-            
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4 position-relative card-clicavel" style="background-color: #FFFFFF; border-left: 5px solid #3182CE !important;" onclick="abrirTermo('Algoritmo', 'Sequência finita de regras, raciocínios ou operações que, aplicada a um número finito de dados, permite solucionar classes semelhantes de problemas.')">
-                    <div class="card-body p-4 d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h5 class="card-title fw-bold mb-0" style="color: #3182CE; font-size: 1.25rem;">Algoritmo</h5>
-                        </div>
-                        <p class="card-text text-muted flex-grow-1 texto-limitado" style="font-size: 0.95rem; line-height: 1.6;">
-                            Sequência finita de regras, raciocínios ou operações que, aplicada a um número finito de dados, permite solucionar classes semelhantes de problemas.
-                        </p>
-                        
-                        <div class="d-flex justify-content-end gap-2 mt-3 pt-3 border-top">
-                            <button class="btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3" onclick="event.stopPropagation(); prepararEdicao(1, 'Algoritmo', 'Sequência finita de regras, raciocínios ou operações que, aplicada a um número finito de dados, permite solucionar classes semelhantes de problemas.')">
-                                Editar
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger rounded-pill fw-bold px-3" onclick="event.stopPropagation(); prepararExclusao(1)">
-                                Excluir
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
-
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4 position-relative card-clicavel" style="background-color: #FFFFFF; border-left: 5px solid #3182CE !important;" onclick="abrirTermo('Paradoxo', 'Declaração aparentemente verdadeira que leva a uma contradição lógica, ou a uma situação que desafia a intuição.')">
-                    <div class="card-body p-4 d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h5 class="card-title fw-bold mb-0" style="color: #3182CE; font-size: 1.25rem;">Paradoxo</h5>
-                        </div>
-                        <p class="card-text text-muted flex-grow-1 texto-limitado" style="font-size: 0.95rem; line-height: 1.6;">
-                            Declaração aparentemente verdadeira que leva a uma contradição lógica, ou a uma situação que desafia a intuição.
-                        </p>
-                        
-                        <div class="d-flex justify-content-end gap-2 mt-3 pt-3 border-top">
-                            <button class="btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3" onclick="event.stopPropagation(); prepararEdicao(2, 'Paradoxo', 'Declaração aparentemente verdadeira que leva a uma contradição lógica, ou a uma situação que desafia a intuição.')">
-                                Editar
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger rounded-pill fw-bold px-3" onclick="event.stopPropagation(); prepararExclusao(2)">
-                                Excluir
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
     </div>
 
     <div class="modal fade" id="modalLeituraTermo" tabindex="-1" aria-hidden="true">
@@ -176,11 +181,11 @@ if ($_SESSION['user_perfil'] !== 'Professor') {
                     <div class="modal-body px-4 py-4">
                         <div class="mb-4">
                             <label class="form-label fw-bold small text-uppercase text-muted">Termo / Palavra</label>
-                            <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light" name="nome_termo" placeholder="Ex: Metáfora" required>
+                            <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-light" name="nome_termo" placeholder="Ex: Pleonasmo" required>
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-bold small text-uppercase text-muted">Significado</label>
-                            <textarea class="form-control rounded-3 border-0 bg-light" name="significado_termo" rows="4" placeholder="Digite a definição da palavra..." required></textarea>
+                            <textarea class="form-control rounded-3 border-0 bg-light" name="significado_termo" rows="4" placeholder="Digite a definição..." required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer border-0 pt-0 pb-4 px-4 d-flex gap-2">
@@ -247,28 +252,185 @@ if ($_SESSION['user_perfil'] !== 'Professor') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // Função para ABRIR LEITURA (Ampliar)
+        // --- VARIÁVEIS GLOBAIS ---
+        const DISCIPLINA_ATUAL = 'Português';
+        let todosOsTermos = []; // Guarda tudo do banco
+        let letraAtual = 'Todos'; // Guarda o filtro atual
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            gerarFiltroAlfabetico();
+            carregarTermos();
+        });
+
+        // 1. GERAR BOTÕES DE A a Z
+        function gerarFiltroAlfabetico() {
+            const container = document.getElementById('filtroAlfabetico');
+            const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            
+            alfabeto.forEach(letra => {
+                container.innerHTML += `<button class="letra-item" onclick="filtrarPorLetra('${letra}', this)">${letra}</button>`;
+            });
+        }
+
+        // 2. FILTRAR POR LETRA
+        function filtrarPorLetra(letra, botaoClicado) {
+            letraAtual = letra;
+
+            // Remove a classe 'ativo' de todos os botões
+            const botoes = document.querySelectorAll('.letra-item');
+            botoes.forEach(btn => btn.classList.remove('ativo'));
+            
+            // Coloca a classe 'ativo' (Azul com sombra) apenas no botão clicado
+            botaoClicado.classList.add('ativo');
+
+            // Aplica o filtro de letra e da barra de pesquisa juntos
+            aplicarFiltros();
+        }
+
+        // 3. BARRA DE PESQUISA (Tempo Real)
+        document.getElementById('pesquisaTermo').addEventListener('input', aplicarFiltros);
+
+        // 4. APLICAR TODOS OS FILTROS JUNTOS
+        function aplicarFiltros() {
+            const termoBusca = document.getElementById('pesquisaTermo').value.toLowerCase();
+            
+            const filtrados = todosOsTermos.filter(termo => {
+                const comecaComLetra = (letraAtual === 'Todos') || termo.nome_termo.toUpperCase().startsWith(letraAtual);
+                const contemTexto = termo.nome_termo.toLowerCase().includes(termoBusca);
+                return comecaComLetra && contemTexto;
+            });
+
+            renderizarCards(filtrados);
+        }
+
+        // 5. GET: BUSCAR DO BANCO
+        async function carregarTermos() {
+            try {
+                const response = await fetch(`api/professor.php?acao=GET&disciplina=${DISCIPLINA_ATUAL}`);
+                const resultado = await response.json();
+
+                if (resultado.status === 'sucesso') {
+                    todosOsTermos = resultado.dados; // Salva na memória
+                    aplicarFiltros(); // Renderiza usando os filtros atuais
+                }
+            } catch (erro) {
+                console.error("Erro ao buscar dados:", erro);
+            }
+        }
+
+        // 6. RENDERIZAR OS CARDS NA TELA
+        function renderizarCards(termos) {
+            const lista = document.getElementById('listaTermos');
+            lista.innerHTML = ''; 
+
+            if (termos.length === 0) {
+                lista.innerHTML = `<div class="col-12 text-center text-muted mt-4"><p>Nenhum termo encontrado.</p></div>`;
+                return;
+            }
+
+            termos.forEach(termo => {
+                const sigEscapado = termo.significado_termo.replace(/'/g, "\\'");
+                const nomeEscapado = termo.nome_termo.replace(/'/g, "\\'");
+
+                lista.innerHTML += `
+                    <div class="col-12 col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 position-relative card-clicavel" 
+                             style="background-color: #FFFFFF; border-left: 5px solid #3182CE !important;" 
+                             onclick="abrirTermo('${nomeEscapado}', '${sigEscapado}')">
+                            <div class="card-body p-4 d-flex flex-column">
+                                <h5 class="card-title fw-bold mb-0" style="color: #3182CE; font-size: 1.25rem;">${termo.nome_termo}</h5>
+                                <p class="card-text text-muted flex-grow-1 texto-limitado mt-3" style="font-size: 0.95rem; line-height: 1.6;">
+                                    ${termo.significado_termo}
+                                </p>
+                                <div class="d-flex justify-content-end gap-2 mt-3 pt-3 border-top">
+                                    <button class="btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3" 
+                                            onclick="event.stopPropagation(); prepararEdicao(${termo.id_termo}, '${nomeEscapado}', '${sigEscapado}')">
+                                        Editar
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger rounded-pill fw-bold px-3" 
+                                            onclick="event.stopPropagation(); prepararExclusao(${termo.id_termo})">
+                                        Excluir
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- FUNÇÕES DE CRUD (Salvar, Editar, Excluir) ---
+
+        // POST: Salvar Novo
+        document.getElementById('formNovoTermo').onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            formData.append('acao', 'POST');
+            formData.append('disciplina', DISCIPLINA_ATUAL);
+
+            try {
+                const res = await fetch('api/professor.php', { method: 'POST', body: formData });
+                const data = await res.json();
+                
+                if(data.status === 'sucesso') {
+                    const modalEl = document.getElementById('modalNovoTermo');
+                    const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                    modal.hide();
+                    
+                    this.reset();
+                    carregarTermos();
+                } else { alert("Aviso: " + data.mensagem); }
+            } catch (erro) { console.error("Erro:", erro); }
+        };
+
+        // UPDATE: Editar
+        document.getElementById('formEditarTermo').onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            formData.append('acao', 'UPDATE');
+
+            const res = await fetch('api/professor.php', { method: 'POST', body: formData });
+            const data = await res.json();
+            
+            if(data.status === 'sucesso') {
+                bootstrap.Modal.getInstance(document.getElementById('modalEditarTermo')).hide();
+                carregarTermos();
+            } else { alert(data.mensagem); }
+        };
+
+        // EXCLUDE: Excluir
+        document.getElementById('formExcluirTermo').onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            formData.append('acao', 'EXCLUDE');
+
+            const res = await fetch('api/professor.php', { method: 'POST', body: formData });
+            const data = await res.json();
+            
+            if(data.status === 'sucesso') {
+                bootstrap.Modal.getInstance(document.getElementById('modalExcluirTermo')).hide();
+                carregarTermos();
+            } else { alert(data.mensagem); }
+        };
+
+        // --- FUNÇÕES DE MODAL ---
         function abrirTermo(titulo, significado) {
             document.getElementById('modalTituloLeitura').innerText = titulo;
             document.getElementById('modalSignificadoLeitura').innerText = significado;
-            var modal = new bootstrap.Modal(document.getElementById('modalLeituraTermo'));
-            modal.show();
+            new bootstrap.Modal(document.getElementById('modalLeituraTermo')).show();
         }
 
-        // Função para PREPARAR EDIÇÃO
         function prepararEdicao(id, nome, significado) {
             document.getElementById('edit_id').value = id;
             document.getElementById('edit_nome').value = nome;
             document.getElementById('edit_significado').value = significado;
-            var modal = new bootstrap.Modal(document.getElementById('modalEditarTermo'));
-            modal.show();
+            new bootstrap.Modal(document.getElementById('modalEditarTermo')).show();
         }
 
-        // Função para PREPARAR EXCLUSÃO
         function prepararExclusao(id) {
             document.getElementById('delete_id').value = id;
-            var modal = new bootstrap.Modal(document.getElementById('modalExcluirTermo'));
-            modal.show();
+            new bootstrap.Modal(document.getElementById('modalExcluirTermo')).show();
         }
     </script>
 </body>

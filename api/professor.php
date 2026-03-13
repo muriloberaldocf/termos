@@ -1,6 +1,7 @@
 <?php
 session_start();
-// Exibe erros para facilitar o seu debug durante os testes
+
+// Exibe erros para facilitar o debug (pode desativar quando for lançar o site oficial)
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -24,22 +25,14 @@ try {
 // 2. DEFINIÇÃO DA AÇÃO
 $acao = $_REQUEST['acao'] ?? ''; 
 
-/*// 3. CONTROLE DE ACESSO
-// UPDATE e EXCLUDE: Somente Professores
-if (in_array($acao, ['UPDATE', 'EXCLUDE'])) {
+// 3. CONTROLE DE ACESSO (Travas de Segurança)
+if (in_array($acao, ['POST', 'UPDATE', 'EXCLUDE'])) {
+    // Se tentar salvar, editar ou excluir, TEM que estar logado e TEM que ser Professor
     if (!isset($_SESSION['user_id']) || $_SESSION['user_perfil'] !== 'Professor') {
-        echo json_encode(['status' => 'erro', 'mensagem' => 'Acesso negado. Somente professores podem editar ou excluir.']);
+        echo json_encode(['status' => 'erro', 'mensagem' => 'Acesso negado. Somente professores podem fazer alterações.']);
         exit;
     }
 }
-
-// POST e GET: Qualquer um logado (Professor ou Sala)
-if (in_array($acao, ['POST', 'GET'])) {
-    if (!isset($_SESSION['user_id'])) {
-        echo json_encode(['status' => 'erro', 'mensagem' => 'Você precisa estar logado.']);
-        exit;
-    }
-}*/
 
 // 4. ROTEAMENTO (CRUD)
 switch ($acao) {
@@ -63,7 +56,9 @@ switch ($acao) {
         $nome = $_POST['nome_termo'] ?? '';
         $significado = $_POST['significado_termo'] ?? '';
         $disciplina = $_POST['disciplina'] ?? '';
-        $login_id = 1;
+        
+        // Agora pegamos o ID real de quem está logado!
+        $login_id = $_SESSION['user_id']; 
 
         if (!$nome || !$significado || !$disciplina) {
             echo json_encode(['status' => 'erro', 'mensagem' => 'Dados incompletos.']);
@@ -92,6 +87,11 @@ switch ($acao) {
         $nome = $_POST['nome_termo'] ?? '';
         $significado = $_POST['significado_termo'] ?? '';
 
+        if (!$id || !$nome || !$significado) {
+            echo json_encode(['status' => 'erro', 'mensagem' => 'Dados incompletos para edição.']);
+            exit;
+        }
+
         try {
             $stmt = $pdo->prepare("UPDATE termos SET nome_termo = ?, significado_termo = ? WHERE id_termo = ?");
             $stmt->execute([$nome, $significado, $id]);
@@ -103,6 +103,12 @@ switch ($acao) {
 
     case 'EXCLUDE':
         $id = $_POST['id'] ?? '';
+        
+        if (!$id) {
+            echo json_encode(['status' => 'erro', 'mensagem' => 'ID não informado.']);
+            exit;
+        }
+
         try {
             $pdo->beginTransaction();
             $stmt1 = $pdo->prepare("DELETE FROM disciplinas WHERE termos_id_termo = ?");

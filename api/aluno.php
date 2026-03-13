@@ -1,48 +1,37 @@
 <?php
 session_start();
-require_once '../config/database.php';
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
-if (!isset($_SESSION['user_id']) || $_SESSION['user_perfil'] !== 'gestor') {
-    echo json_encode(["success" => false, "message" => "Acesso negado."]);
+// 1. SEGURANÇA: Verifica se a pessoa está logada
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['status' => 'erro', 'mensagem' => 'Acesso negado. Faça login.']);
     exit;
 }
-$method = $_SERVER['REQUEST_METHOD'];
 
-switch ($method){
-    case 'GET':
-        $sql = "SELECT nome_termo, significado_termo as termos_tecnicos from termos";
+// 2. CONEXÃO COM O BANCO DE DADOS
+// Ajuste o nome do arquivo de conexão se o seu for diferente (ex: conexao.php, config.php)
+require_once '../conexao.php'; 
 
-        $result = $conn -> query ($sql);
-        $termos = [];
+// 3. RECEBE OS PARÂMETROS DA URL (Ex: api/aluno.php?acao=GET&disciplina=Matemática)
+$acao = $_GET['acao'] ?? '';
+$disciplina = $_GET['disciplina'] ?? '';
 
-        if ($result){
-            while ($row = $result ->fetch_assoc()){
-                $termos[] = $row;
-            }
-        }
-        echo json_encode(["success" => true, "data" => $termos]);
-        break;
-
-    case 'POST':
-        $data = json_decode(file_get_contents("php://input"));
-
-        if(!isset($data->nome_termo) || !isset($data->significado_termo)){
-            echo json_encode(["success" => false, "message" => "Dados incompletos. Informe nome_termo e significado_termo."]);
-            exit;
-            }
-
-            $nome = $conn->real_escape_string(trim($data->nome));
-            $id_bloco = (int)$data->id_bloco;
-
-            $sql = "INSERT INTO termos (nome_termo, significado_termo) VALUES ('$nome_termo', '$significado_termo')";
-
-            if($conn->query($sql) === TRUE){
-                echo json_encode(["success" => true, "message" => "Ambiente criado com sucesso!", "id_ambiente" => $conn->insert_id]);
-            } else {
-                echo json_encode(["success" => false, "message" => "Erro ao criar ambiente: " . $conn->error]);
-            }
-            break;
+// 4. ROTA GET - Buscar os termos (A ÚNICA COISA QUE O ALUNO PODE FAZER)
+if ($acao === 'GET' && !empty($disciplina)) {
+    try {
+        // Busca todos os termos daquela disciplina, já em ordem alfabética (A-Z)
+        $stmt = $pdo->prepare("SELECT id_termo, nome_termo, significado_termo FROM termos WHERE disciplina = :disciplina ORDER BY nome_termo ASC");
+        $stmt->bindParam(':disciplina', $disciplina);
+        $stmt->execute();
+        
+        $termos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo json_encode(['status' => 'sucesso', 'dados' => $termos]);
+    } catch (PDOException $e) {
+        echo json_encode(['status' => 'erro', 'mensagem' => 'Erro ao buscar termos: ' . $e->getMessage()]);
+    }
+    exit;
 }
 
-?>
+// Se tentar mandar qualquer outra ação (POST, DELETE, etc) ou esquecer a disciplina:
+echo json_encode(['status' => 'erro', 'mensagem' => 'Ação inválida ou disciplina não informada.']);
