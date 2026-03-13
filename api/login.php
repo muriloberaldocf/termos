@@ -5,14 +5,21 @@ ini_set('display_errors', 1);
 session_start();
 require_once '../config/database.php';
 
-// Verifica se o código de login foi enviado pelo formulário
-if (empty($_POST['codigo_login'])) {
-    header("Location: ../login.php?erro=Informe o código de acesso.");
+// Define que a resposta será em formato JSON
+header('Content-Type: application/json');
+
+// Captura o JSON enviado pelo Fetch/JS
+$dadosBrutos = file_get_contents("php://input");
+$data = json_decode($dadosBrutos);
+
+// Verifica se o código de login foi enviado
+if (!$data || empty($data->codigo_login)) {
+    echo json_encode(["success" => false, "message" => "Informe o código de acesso."]);
     exit;
 }
 
 // Limpa a entrada do usuário
-$codigo_login = $conn->real_escape_string(trim($_POST['codigo_login']));
+$codigo_login = $conn->real_escape_string(trim($data->codigo_login));
 
 // Busca o usuário na tabela 'login'
 $sql = "SELECT id_login, codigo_login, nivel_login 
@@ -29,17 +36,13 @@ if ($result && $result->num_rows === 1) {
     $_SESSION['user_id'] = $user['id_login'];
     $_SESSION['user_perfil'] = $user['nivel_login']; 
 
-    // Redireciona dependendo do perfil
-    if ($user['nivel_login'] === 'professor') {
-        header("Location: ../selecionar.php");
-    } else {
-        header("Location: ../selecionar.php");
-    }
+    // Retorna SUCESSO e o perfil (o seu JS vai ler isso e redirecionar lá no front)
+    echo json_encode(["success" => true, "perfil" => $user['nivel_login']]);
     exit;
 
 } else {
-    // Redireciona de volta para o login com a mensagem de erro
-    header("Location: ../login.php?erro=Código incorreto. Tente novamente.");
+    // Retorna ERRO para o JavaScript exibir na tela
+    echo json_encode(["success" => false, "message" => "Código incorreto. Tente novamente."]);
     exit;
 }
 ?>
