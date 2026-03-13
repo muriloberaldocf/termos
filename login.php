@@ -53,7 +53,7 @@
                                 </div>
                             </div>
 
-                            <div class="mb-5">
+                            <!-- <div class="mb-5">
                                 <label class="form-label fw-bold small text-uppercase text-muted px-2">Entrar como</label>
                                 <div class="d-flex rounded-pill p-1" style="background-color: #F4F6F8;">
                                     <input type="radio" class="btn-check" name="tipoAcesso" value="sala" id="acessoSala" autocomplete="off" checked>
@@ -62,7 +62,7 @@
                                     <input type="radio" class="btn-check" name="tipoAcesso" value="professor" id="acessoProfessor" autocomplete="off">
                                     <label class="btn btn-outline-secondary border-0 w-100 rounded-pill py-2 fw-semibold text-dark shadow-none" for="acessoProfessor">Professor</label>
                                 </div>
-                            </div>
+                            </div> -->
 
                             <button type="submit" class="btn w-100 py-3 fw-bold rounded-pill shadow-sm" style="background-color: #3182CE; color: #FFFFFF; font-size: 1.1rem;">
                                 Entrar
