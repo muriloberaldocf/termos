@@ -13,13 +13,15 @@ $dadosBrutos = file_get_contents("php://input");
 $data = json_decode($dadosBrutos);
 
 // Verifica se o código de login foi enviado
-if (!$data || empty($data->codigo_login)) {
-    echo json_encode(["success" => false, "message" => "Informe o código de acesso."]);
+if (!$data || empty($data->codigoAcesso)) {
+    echo json_encode(["success" => false, "message" => "Informe o código de acesso.". $data->codigoAcesso]);
+
+
     exit;
 }
 
 // Limpa a entrada do usuário
-$codigo_login = $conn->real_escape_string(trim($data->codigo_login));
+$codigo_login = $conn->real_escape_string(trim($data->codigoAcesso));
 
 // Busca o usuário na tabela 'login'
 $sql = "SELECT id_login, codigo_login, nivel_login 
