@@ -1,27 +1,10 @@
 <?php
 session_start();
-<<<<<<< HEAD
-require_once '../config/database.php';
-
-// Define que a resposta será em formato JSON
-header('Content-Type: application/json');
-
-// Captura o JSON enviado pelo Fetch/JS
-$dadosBrutos = file_get_contents("php://input");
-$data = json_decode($dadosBrutos);
-
-// Verifica se o código de login foi enviado
-if (!$data || empty($data->codigoAcesso)) {
-    echo json_encode(["success" => false, "message" => "Informe o código de acesso.". $data->codigoAcesso]);
-
-
-=======
 header('Content-Type: application/json; charset=utf-8');
 
 // 1. SEGURANÇA: Verifica se a pessoa está logada
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['status' => 'erro', 'mensagem' => 'Acesso negado. Faça login.']);
->>>>>>> ab08d2614bc46b338971c08533e153ed9d0efb98
     exit;
 }
 
