@@ -8,7 +8,6 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 if ($_SESSION['user_perfil'] !== 'Professor') {
-    // Se um aluno tentar acessar essa página pela URL, é expulso para a página de aluno correspondente
     header("Location: aluno_pt.php"); 
     exit;
 }
@@ -39,48 +38,6 @@ if ($_SESSION['user_perfil'] !== 'Professor') {
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
-        /* --- NOVO ESTILO DO FILTRO ALFABÉTICO --- */
-        .scroll-alfabeto {
-            display: flex;
-            overflow-x: auto;
-            gap: 0.8rem;
-            padding: 10px 5px 20px 5px;
-            scrollbar-width: none; /* Esconde no Firefox */
-            -ms-overflow-style: none;  /* Esconde no IE/Edge */
-        }
-        .scroll-alfabeto::-webkit-scrollbar {
-            display: none; /* Esconde no Chrome/Safari */
-        }
-        .letra-item {
-            flex: 0 0 auto;
-            width: 48px;
-            height: 48px;
-            border: none;
-            background: #FFFFFF;
-            color: #A0AEC0; /* Cinza suave */
-            font-weight: 700;
-            font-size: 1.1rem;
-            border-radius: 14px; /* Quadrado com borda arredondada estilo Apple */
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        .letra-item:hover {
-            background: #F7FAFC;
-            color: #2D3748;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
-        }
-        .letra-item.ativo {
-            background: #3182CE; /* Azul do Português */
-            color: #FFFFFF;
-            box-shadow: 0 8px 16px rgba(49, 130, 206, 0.3);
-            transform: translateY(-3px);
-        }
     </style>
 </head>
 <body class="min-vh-100" style="background-color: #F4F6F8; color: #2D3748;">
@@ -110,25 +67,15 @@ if ($_SESSION['user_perfil'] !== 'Professor') {
                 <a href="api/logout.php" class="btn btn-light text-danger fw-bold rounded-pill px-3 shadow-sm border-0 d-flex align-items-center gap-2" title="Sair da conta">
                     <span class="d-none d-sm-inline">Sair</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                        <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5-.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
                         <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
                     </svg>
                 </a>
             </div>
-
         </div>
     </nav>
 
     <div class="container py-5">
-        
-        <div class="row mb-4 justify-content-center">
-            <div class="col-12 col-xl-10">
-                <div class="scroll-alfabeto" id="filtroAlfabetico">
-                    <button class="letra-item ativo" onclick="filtrarPorLetra('Todos', this)">#</button>
-                    </div>
-            </div>
-        </div>
-
         <div class="row mb-5 justify-content-center">
             <div class="col-12 col-md-8 col-lg-6">
                 <div class="input-group input-group-lg rounded-pill shadow-sm overflow-hidden" style="background-color: #FFFFFF;">
@@ -164,7 +111,7 @@ if ($_SESSION['user_perfil'] !== 'Professor') {
                     <p id="modalSignificadoLeitura" class="text-secondary mb-0 fs-5" style="white-space: pre-wrap; line-height: 1.8;"></p>
                 </div>
                 <div class="modal-footer border-0 pt-0 pb-4 px-4">
-                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold w-100" data-bs-dismiss="modal" style="color: #2D3748;">Fechar</button>
+                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold w-100" data-bs-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </div>
@@ -252,74 +199,43 @@ if ($_SESSION['user_perfil'] !== 'Professor') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // --- VARIÁVEIS GLOBAIS ---
         const DISCIPLINA_ATUAL = 'Português';
-        let todosOsTermos = []; // Guarda tudo do banco
-        let letraAtual = 'Todos'; // Guarda o filtro atual
+        let todosOsTermos = []; 
 
-        // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
-            gerarFiltroAlfabetico();
             carregarTermos();
         });
 
-        // 1. GERAR BOTÕES DE A a Z
-        function gerarFiltroAlfabetico() {
-            const container = document.getElementById('filtroAlfabetico');
-            const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-            
-            alfabeto.forEach(letra => {
-                container.innerHTML += `<button class="letra-item" onclick="filtrarPorLetra('${letra}', this)">${letra}</button>`;
-            });
-        }
-
-        // 2. FILTRAR POR LETRA
-        function filtrarPorLetra(letra, botaoClicado) {
-            letraAtual = letra;
-
-            // Remove a classe 'ativo' de todos os botões
-            const botoes = document.querySelectorAll('.letra-item');
-            botoes.forEach(btn => btn.classList.remove('ativo'));
-            
-            // Coloca a classe 'ativo' (Azul com sombra) apenas no botão clicado
-            botaoClicado.classList.add('ativo');
-
-            // Aplica o filtro de letra e da barra de pesquisa juntos
-            aplicarFiltros();
-        }
-
-        // 3. BARRA DE PESQUISA (Tempo Real)
+        // 1. BARRA DE PESQUISA
         document.getElementById('pesquisaTermo').addEventListener('input', aplicarFiltros);
 
-        // 4. APLICAR TODOS OS FILTROS JUNTOS
+        // 2. APLICAR FILTRO DE BUSCA
         function aplicarFiltros() {
             const termoBusca = document.getElementById('pesquisaTermo').value.toLowerCase();
             
             const filtrados = todosOsTermos.filter(termo => {
-                const comecaComLetra = (letraAtual === 'Todos') || termo.nome_termo.toUpperCase().startsWith(letraAtual);
-                const contemTexto = termo.nome_termo.toLowerCase().includes(termoBusca);
-                return comecaComLetra && contemTexto;
+                return termo.nome_termo.toLowerCase().includes(termoBusca);
             });
 
             renderizarCards(filtrados);
         }
 
-        // 5. GET: BUSCAR DO BANCO
+        // 3. GET: BUSCAR DO BANCO
         async function carregarTermos() {
             try {
                 const response = await fetch(`api/professor.php?acao=GET&disciplina=${DISCIPLINA_ATUAL}`);
                 const resultado = await response.json();
 
                 if (resultado.status === 'sucesso') {
-                    todosOsTermos = resultado.dados; // Salva na memória
-                    aplicarFiltros(); // Renderiza usando os filtros atuais
+                    todosOsTermos = resultado.dados;
+                    aplicarFiltros(); 
                 }
             } catch (erro) {
                 console.error("Erro ao buscar dados:", erro);
             }
         }
 
-        // 6. RENDERIZAR OS CARDS NA TELA
+        // 4. RENDERIZAR OS CARDS
         function renderizarCards(termos) {
             const lista = document.getElementById('listaTermos');
             lista.innerHTML = ''; 
@@ -360,9 +276,8 @@ if ($_SESSION['user_perfil'] !== 'Professor') {
             });
         }
 
-        // --- FUNÇÕES DE CRUD (Salvar, Editar, Excluir) ---
+        // --- CRUD ACTIONS ---
 
-        // POST: Salvar Novo
         document.getElementById('formNovoTermo').onsubmit = async function(e) {
             e.preventDefault();
             const formData = new FormData(this);
@@ -372,49 +287,39 @@ if ($_SESSION['user_perfil'] !== 'Professor') {
             try {
                 const res = await fetch('api/professor.php', { method: 'POST', body: formData });
                 const data = await res.json();
-                
                 if(data.status === 'sucesso') {
-                    const modalEl = document.getElementById('modalNovoTermo');
-                    const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-                    modal.hide();
-                    
+                    bootstrap.Modal.getInstance(document.getElementById('modalNovoTermo')).hide();
                     this.reset();
                     carregarTermos();
                 } else { alert("Aviso: " + data.mensagem); }
             } catch (erro) { console.error("Erro:", erro); }
         };
 
-        // UPDATE: Editar
         document.getElementById('formEditarTermo').onsubmit = async function(e) {
             e.preventDefault();
             const formData = new FormData(this);
             formData.append('acao', 'UPDATE');
-
             const res = await fetch('api/professor.php', { method: 'POST', body: formData });
             const data = await res.json();
-            
             if(data.status === 'sucesso') {
                 bootstrap.Modal.getInstance(document.getElementById('modalEditarTermo')).hide();
                 carregarTermos();
             } else { alert(data.mensagem); }
         };
 
-        // EXCLUDE: Excluir
         document.getElementById('formExcluirTermo').onsubmit = async function(e) {
             e.preventDefault();
             const formData = new FormData(this);
             formData.append('acao', 'EXCLUDE');
-
             const res = await fetch('api/professor.php', { method: 'POST', body: formData });
             const data = await res.json();
-            
             if(data.status === 'sucesso') {
                 bootstrap.Modal.getInstance(document.getElementById('modalExcluirTermo')).hide();
                 carregarTermos();
             } else { alert(data.mensagem); }
         };
 
-        // --- FUNÇÕES DE MODAL ---
+        // --- AUX MODALS ---
         function abrirTermo(titulo, significado) {
             document.getElementById('modalTituloLeitura').innerText = titulo;
             document.getElementById('modalSignificadoLeitura').innerText = significado;

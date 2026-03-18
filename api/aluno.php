@@ -4,7 +4,7 @@ header('Content-Type: application/json; charset=utf-8');
 
 // 1. CONFIGURAÇÃO (Ajuste se o seu banco não for 'termos')
 $host = 'localhost'; 
-$dbname = 'termos'; 
+$dbname = 'termos_tecnicos'; 
 $user = 'root'; 
 $pass = ''; 
 
