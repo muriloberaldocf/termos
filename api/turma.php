@@ -1,106 +1,102 @@
 <?php
 session_start();
-header('Content-Type: application/json; charset=utf-8');
-
-// 1. SEGURANÇA: Verifica se a pessoa está logada
-
-
-// 2. CONEXÃO COM O BANCO DE DADOS
+// Chama a conexão que cria a variável $conn usando mysqli
 require_once '../config/database.php'; 
 
-$metodo = $_SERVER['REQUEST_METHOD'];
-$acao = $_REQUEST['acao'] ?? '';
+header('Content-Type: application/json');
 
-// ---------------------------------------------------------
-// ROTA GET - Listar todas as turmas
-// ---------------------------------------------------------
-if ($metodo === 'GET' && $acao === 'GET') {
-    $stmt = $conn->prepare("SELECT id_turma, nome_turma FROM turmas ORDER BY nome_turma ASC");
-    if ($stmt) {
-        $stmt->execute();
-        $resultado = $stmt->get_result();
-        $turmas = $resultado->fetch_all(MYSQLI_ASSOC);
-        echo json_encode(['status' => 'sucesso', 'dados' => $turmas]);
-    } else {
-        echo json_encode(['status' => 'erro', 'mensagem' => 'Erro na consulta: ' . $conn->error]);
-    }
+// 1. Verificação de Acesso: O professor precisa estar logado!
+// Se estiver usando o Postman para testar, comente este bloco IF temporariamente.
+if (!isset($_SESSION['user_id']) || $_SESSION['user_perfil'] !== 'Professor') {
+    echo json_encode(['status' => 'erro', 'mensagem' => 'Acesso negado.']);
     exit;
 }
 
-// ---------------------------------------------------------
-// ROTA POST - Criar uma nova turma
-// ---------------------------------------------------------
-if ($metodo === 'POST' && $acao === 'POST') {
-    $nome_turma = trim($_POST['nome_turma'] ?? '');
+// 2. Descobre qual ação o frontend ou o Postman está pedindo
+$acao = $_POST['acao'] ?? $_GET['acao'] ?? '';
 
-    if (empty($nome_turma)) {
-        echo json_encode(['status' => 'erro', 'mensagem' => 'O nome da turma é obrigatório.']);
-        exit;
-    }
+switch ($acao) {
+    case 'GET':
+        // Busca as turmas que estão salvas na tabela 'login' com o nível 'Sala'
+        $sql = "SELECT id_login AS id_turma, codigo_login AS nome_turma FROM login WHERE nivel_login = 'Sala' ORDER BY codigo_login ASC";
+        $result = $conn->query($sql);
+        
+        $turmas = [];
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $turmas[] = $row;
+            }
+        }
+        echo json_encode(['status' => 'sucesso', 'dados' => $turmas]);
+        break;
 
-    $stmt = $conn->prepare("INSERT INTO turmas (nome_turma) VALUES (?)");
-    if ($stmt) {
-        $stmt->bind_param("s", $nome_turma); // "s" significa String
+    case 'POST':
+        // Criar uma nova Turma (Sala)
+        $nome_turma = $_POST['nome_turma'] ?? '';
+        
+        if (empty($nome_turma)) {
+            echo json_encode(['status' => 'erro', 'mensagem' => 'O nome/código da turma é obrigatório.']);
+            exit;
+        }
+
+        // Insere na tabela login com nivel = Sala
+        $stmt = $conn->prepare("INSERT INTO login (codigo_login, nivel_login) VALUES (?, 'Sala')");
+        $stmt->bind_param("s", $nome_turma);
+        
         if ($stmt->execute()) {
             echo json_encode(['status' => 'sucesso', 'mensagem' => 'Turma criada com sucesso!']);
         } else {
-            echo json_encode(['status' => 'erro', 'mensagem' => 'Erro ao criar a turma: ' . $stmt->error]);
+            echo json_encode(['status' => 'erro', 'mensagem' => 'Erro ao criar turma.']);
         }
-    }
-    exit;
-}
+        $stmt->close();
+        break;
 
-// ---------------------------------------------------------
-// ROTA UPDATE - Editar o nome de uma turma
-// ---------------------------------------------------------
-if ($metodo === 'POST' && $acao === 'UPDATE') {
-    $id_turma = $_POST['id_turma'] ?? '';
-    $nome_turma = trim($_POST['nome_turma'] ?? '');
+    case 'UPDATE':
+        // Editar o nome de uma Turma
+        $id_turma = $_POST['id_turma'] ?? '';
+        $nome_turma = $_POST['nome_turma'] ?? '';
+        
+        if (empty($id_turma) || empty($nome_turma)) {
+            echo json_encode(['status' => 'erro', 'mensagem' => 'ID e Nome da turma são obrigatórios para editar.']);
+            exit;
+        }
 
-    if (empty($id_turma) || empty($nome_turma)) {
-        echo json_encode(['status' => 'erro', 'mensagem' => 'ID e Nome da turma são obrigatórios para editar.']);
-        exit;
-    }
-
-    $stmt = $conn->prepare("UPDATE turmas SET nome_turma = ? WHERE id_turma = ?");
-    if ($stmt) {
-        $stmt->bind_param("si", $nome_turma, $id_turma); // "s" = String, "i" = Integer
+        $stmt = $conn->prepare("UPDATE login SET codigo_login = ? WHERE id_login = ? AND nivel_login = 'Sala'");
+        // "si" significa que o primeiro param é string (s) e o segundo é inteiro (i)
+        $stmt->bind_param("si", $nome_turma, $id_turma);
+        
         if ($stmt->execute()) {
             echo json_encode(['status' => 'sucesso', 'mensagem' => 'Turma atualizada com sucesso!']);
         } else {
-            echo json_encode(['status' => 'erro', 'mensagem' => 'Erro ao atualizar a turma.']);
+            echo json_encode(['status' => 'erro', 'mensagem' => 'Erro ao atualizar turma.']);
         }
-    }
-    exit;
-}
+        $stmt->close();
+        break;
 
-// ---------------------------------------------------------
-// ROTA EXCLUDE - Deletar uma turma
-// ---------------------------------------------------------
-if ($metodo === 'POST' && $acao === 'EXCLUDE') {
-    $id_turma = $_POST['id_turma'] ?? '';
+    case 'EXCLUDE':
+        // Excluir uma turma
+        $id_turma = $_POST['id_turma'] ?? '';
+        
+        if (empty($id_turma)) {
+            echo json_encode(['status' => 'erro', 'mensagem' => 'ID da turma é obrigatório para excluir.']);
+            exit;
+        }
 
-    if (empty($id_turma)) {
-        echo json_encode(['status' => 'erro', 'mensagem' => 'ID da turma é obrigatório para excluir.']);
-        exit;
-    }
-
-    $stmt = $conn->prepare("DELETE FROM turmas WHERE id_turma = ?");
-    if ($stmt) {
+        $stmt = $conn->prepare("DELETE FROM login WHERE id_login = ? AND nivel_login = 'Sala'");
         $stmt->bind_param("i", $id_turma);
+        
         if ($stmt->execute()) {
             echo json_encode(['status' => 'sucesso', 'mensagem' => 'Turma excluída com sucesso!']);
         } else {
-            // Código 1451 no MySQLi significa erro de chave estrangeira (turma em uso)
-            if ($conn->errno == 1451) {
-                echo json_encode(['status' => 'erro', 'mensagem' => 'Não é possível excluir esta turma pois já existem registros vinculados a ela.']);
-            } else {
-                echo json_encode(['status' => 'erro', 'mensagem' => 'Erro ao excluir: ' . $stmt->error]);
-            }
+            echo json_encode(['status' => 'erro', 'mensagem' => 'Erro ao excluir turma.']);
         }
-    }
-    exit;
+        $stmt->close();
+        break;
+
+    default:
+        echo json_encode(['status' => 'erro', 'mensagem' => 'Ação inválida.']);
+        break;
 }
 
-// Se chegar até aqui, mandou uma ação que não existe
-echo json_encode(['status' => 'erro', 'mensagem' => 'Ação inválida.']);
+$conn->close();
+?>
